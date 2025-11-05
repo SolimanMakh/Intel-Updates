@@ -1,73 +1,133 @@
-# React + TypeScript + Vite
+# Intel Updates Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React front‑end dashboard that visualizes Cyber Threat Intel updates with:
 
-Currently, two official plugins are available:
+* Dynamic page system (schema driven)
+* React Router **Data APIs** (loaders)
+* Tailwind CSS v4 UI
+* Analytics (Top Countries, Top Sectors)
+* Filterable intel feed
+* Individual intel detail page with related intel
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> **This repo is FE only.** All data is mocked locally.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+| Feature           | Description                                                       |
+| ----------------- | ----------------------------------------------------------------- |
+| Dynamic Pages     | Screens are defined by a schema object, not hardcoded UI          |
+| URL‑based filters | Search, tags, sectors, groups, etc stored in URL → shareable URLs |
+| Analytics cards   | Donut chart + top country rankings                                |
+| Detail page       | Hero panel, source info, tags, related intel                      |
+| Export PDF        | Single‑click `window.print()` for PDF export                      |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Layer     | Tech                        |
+| --------- | --------------------------- |
+| Framework | React + Vite                |
+| Routing   | React Router v6 (Data APIs) |
+| Styling   | Tailwind CSS v4             |
+| Charts    | Recharts                    |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## Project Architecture
+
+**React Router Data Model**
+
+* URL changes → router loader runs
+* loader applies filtering + analytics
+* UI only renders what loader returns
+
+This pattern = clean separation of logic vs UI.
+
+**Components are atomic modules**
+
+```
+src/
+  screens/        ← screens (DynamicPage + IntelDetail)
+  ui/             ← small reusable components
+  data/           ← mock data
+  utils/          ← filtering + analytics
+  router.tsx      ← route definitions + loaders
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
+
+## Setup
+
+```bash
+npm install
+npm run dev
+```
+
+Tailwind CSS v4 needs **index.css** to contain:
+
+```css
+@import "tailwindcss";
+```
+
+Tailwind config:
 
 ```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+export default {
+  content: ["./index.html","./src/**/*.{js,ts,jsx,tsx}"],
+}
 ```
+
+---
+
+## How Dynamic Pages Work
+
+`PAGE_SCHEMAS` defines layout blocks:
+
+```ts
+"intel-updates": {
+  title: "Intel Updates",
+  layout: [
+    { component: "AnalyticsRow" },
+    { component: "FeedList" },
+  ],
+}
+```
+
+So UI = configured by data, not code.
+
+---
+
+## How Filters Work
+
+* Filters write to URL search params
+* Router sees URL change → auto re‑runs loader
+* loader filters data → UI re‑renders with filtered dataset
+
+This makes the URL the **single source of truth**.
+
+---
+
+## Detail Page Flow
+
+1. User clicks item → `/intel/:id`
+2. loader finds item by id + finds related items
+3. page renders Hero panel + Article + Related intel
+
+---
+
+## Next Steps (optional ideas)
+
+* connect to API instead of mock data
+* replace `window.print()` PDF with server side PDF
+* support dark/light themes
+* add pagination & infinite scroll
+
+---
+
+## License
+
+Internal / private development.
+Not open‑sourced yet.
