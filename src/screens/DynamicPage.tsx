@@ -1,4 +1,4 @@
-import { useLoaderData, useSearchParams, Link } from "react-router-dom";
+import { useLoaderData, useSearchParams } from "react-router-dom";
 import AppShell from "../ui/layout/AppShell";
 import Grid from "../ui/layout/Grid";
 import FiltersSidebar from "../ui/filters/FiltersSidebar";
@@ -24,7 +24,7 @@ export async function dynamicLoader({ params, request }: LoaderFunctionArgs) {
 
 export default function DynamicPage() {
   const { schema, filtered, sectors, countries } = useLoaderData() as any;
-  const [sp] = useSearchParams();
+  // const [sp] = useSearchParams();
 
   return (
     <AppShell title={schema.title}>
