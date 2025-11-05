@@ -1,4 +1,4 @@
-import { useLoaderData, useSearchParams } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import AppShell from "../ui/layout/AppShell";
 import Grid from "../ui/layout/Grid";
 import FiltersSidebar from "../ui/filters/FiltersSidebar";
